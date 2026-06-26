@@ -56,7 +56,6 @@ CURA is designed to:
 - Powered by **LLaMA 3.3 70B Versatile** model via Groq's ultra-fast inference API
 - Persistent **conversation memory** — last 5 chat exchanges are passed as context for coherent multi-turn dialogue
 - Smart **intent detection** (greeting, symptom check, diet/exercise/sleep tips, medicine queries, emergency)
-- Dynamic **avatar expression** heuristics (wave, nod, concern) based on message intent
 - **Typing indicator** with animated dots while the AI processes the query
 
 ### 🩻 Symptom Checker
@@ -95,7 +94,6 @@ CURA is designed to:
 ### 🎨 Premium UI / UX
 - **Dark/Light Mode** toggle with persistent theme preference
 - **Glassmorphism** design with glowing neon accents (cyan, purple, red)
-- **3D Animated Avatar** rendered with Three.js + GSAP (wave, nod, concern animations)
 - **Lottie Loading Screen** with progress bar and percentage counter
 - **AOS (Animate on Scroll)** for smooth message entrance animations
 - **Emoji Picker** with healthcare-themed emoji set
@@ -158,19 +156,19 @@ AI HEALTHCARE CHATBOT/
 ## 🏗️ Architecture
 
 ```
-┌──────────────────────────────────────────────────────────┐
-│                     Browser (Client)                     │
-│                                                          │
-│  ┌────────────┐  ┌──────────────┐  ┌────────────────┐  │
-│  │ Three.js   │  │   chat.js    │  │  animation.js  │  │
-│  │ 3D Avatar  │  │ (Core Logic) │  │ (GSAP/Lottie)  │  │
-│  └────────────┘  └──────┬───────┘  └────────────────┘  │
-│                         │ REST (JSON)                    │
+┌─────────────────────────────────────────────────────────┐
+│                     Browser (Client)                    │
+│                                                         │
+│  ┌────────────┐  ┌──────────────┐  ┌────────────────┐   │
+│  │ Three.js   │  │   chat.js    │  │  animation.js  │   │
+│  │ 3D Avatar  │  │ (Core Logic) │  │ (GSAP/Lottie)  │   │
+│  └────────────┘  └──────┬───────┘  └────────────────┘   │
+│                         │ REST (JSON)                   │
 └─────────────────────────┼──────────────────────────────-┘
                           │
-                ┌─────────▼──────────┐
-                │   Flask Backend    │
-                │     (app.py)       │
+                ┌─────────▼─────────┐
+                │   Flask Backend   │
+                │     (app.py)      │
                 │                   │
                 │  /chat            │
                 │  /symptom-check   │
@@ -182,10 +180,10 @@ AI HEALTHCARE CHATBOT/
                 │  /profile         │
                 └──┬──────────┬─────┘
                    │          │
-        ┌──────────▼──┐   ┌───▼──────────┐
-        │  Groq API   │   │   SQLite DB  │
-        │ LLaMA 3.3   │   │ (healthcare  │
-        │   70B       │   │    .db)      │
+        ┌──────────▼──┐   ┌───▼─────────┐
+        │  Groq API   │   │   SQLite DB │
+        │ LLaMA 3.3   │   │ (healthcare │
+        │   70B       │   │    .db)     │
         └─────────────┘   └─────────────┘
 ```
 
@@ -310,8 +308,8 @@ CREATE TABLE Medicines (
 ### Step 1 — Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/cura-ai-healthcare-chatbot.git
-cd "cura-ai-healthcare-chatbot"
+git clone https://github.com/Abinash-Patnaik/CURA---AI-HEALTHCARE-CHATBOT.git
+cd "CURA---AI-HEALTHCARE-CHATBOT"
 ```
 
 ### Step 2 — Create a Virtual Environment
@@ -449,7 +447,7 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 
 <div align="center">
 
-Made with ❤️ by **AVII**  
+Made with ❤️ by **ABINASH PATNAIK**  
 Powered by **LLaMA 3.3 · Groq · Flask · Three.js**
 
 </div>
