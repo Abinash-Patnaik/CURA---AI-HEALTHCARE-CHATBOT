@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CURA - 3D AI Healthcare Assistant</title>
+    
+    <!-- Meta tags for SEO -->
+    <meta name="description" content="CURA is a futuristic, 3D animated AI Healthcare Chatbot providing basic symptom assessment, medicine lookups, and a lifestyle dashboard.">
+    <meta name="keywords" content="AI Healthcare, 3D Chatbot, Symptom Checker, Medicine Lookup, Health Dashboard, Glassmorphism">
+    <meta name="author" content="CURA AI">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- AOS (Animate On Scroll) CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=7">
+</head>
+<body class="dark-mode">
+
+    <!-- 1. LOADING SCREEN -->
+    <div id="loading-screen">
+        <div class="loader-content">
+            <!-- Lottie Container -->
+            <div id="lottie-loader"></div>
+            <h2 id="welcome-text-typed">Preparing Your Healthcare Assistant...</h2>
+            <div class="progress-bar-outer">
+                <div class="progress-bar-inner" id="loading-progress"></div>
+            </div>
+            <div class="loading-status">Loading Quantum Models... <span id="loading-percent">0%</span></div>
+        </div>
+    </div>
+
+    <!-- 2. MAIN APPLICATION WORKSPACE -->
+    <div class="app-container" style="display: none;">
+        
+        <!-- HEADER -->
+        <header class="app-header">
+            <div class="header-left">
+                <button id="sidebar-toggle" class="icon-btn header-btn" aria-label="Toggle Sidebar">
+                    <i class="fa-solid fa-bars-staggered"></i>
+                </button>
+                <div class="logo-area">
+                    <div class="logo-pulse">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                    </div>
+                    <div>
+                        <h1>CURA <span class="logo-accent">AI</span></h1>
+                        <span class="sub-logo">HEALTH INTELLIGENCE</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="header-right">
+
+
+                <!-- Voice Config Button -->
+                <button id="voice-settings-toggle" class="icon-btn header-btn" title="Voice Settings">
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
+
+                <!-- Profile Button -->
+                <button id="profile-toggle" class="icon-btn header-btn" title="User Profile">
+                    <i class="fa-solid fa-user-gear"></i>
+                </button>
+
+                <!-- Theme Toggle Button -->
+                <button id="theme-toggle" class="icon-btn header-btn" title="Toggle Theme">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- APP BODY (SIDEBAR + MAIN COLUMNS) -->
+        <div class="app-body">
+            
+            <!-- LEFT SIDEBAR -->
+            <aside class="app-sidebar" id="sidebar">
+                <div class="sidebar-top">
+                    <button class="new-chat-btn" id="new-chat-btn">
+                        <i class="fa-solid fa-plus-circle"></i> New Consultation
+                    </button>
+                </div>
+                
+                <div class="sidebar-menu">
+                    <!-- Section: Chat History -->
+                    <div class="sidebar-section">
+                        <div class="section-title">
+                            <span><i class="fa-solid fa-message"></i> Consultation Logs</span>
+                            <button class="clear-history-btn" id="clear-history-btn" title="Clear History"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                        <div class="history-list" id="history-list">
+                            <!-- Injected dynamically -->
+                            <div class="empty-history">No consultations yet.</div>
+                        </div>
+                    </div>
+
+                    <!-- Section: Saved Health Tips -->
+                    <div class="sidebar-section">
+                        <div class="section-title">
+                            <span><i class="fa-solid fa-bookmark"></i> Bookmarked Tips</span>
+                        </div>
+                        <div class="bookmarks-list" id="bookmarks-list">
+                            <div class="empty-bookmarks">Bookmarks empty. Save tips during chats!</div>
+                        </div>
+                    </div>
+
+                    <!-- Section: Medicine Quick Search -->
+                    <div class="sidebar-section">
+                        <div class="section-title">
+                            <span><i class="fa-solid fa-prescription-bottle-medical"></i> Drug Index</span>
+                        </div>
+                        <div class="medicine-search-pane" style="position: relative;">
+                            <div class="search-input-wrapper">
+                                <input type="text" id="med-search-input" placeholder="Search (e.g. Paracetamol)..." autocomplete="off">
+                                <button id="med-search-btn" class="search-action-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            </div>
+                            <div id="med-autocomplete-dropdown" class="autocomplete-dropdown" style="display: none;"></div>
+                            <div id="med-search-results" class="search-results-box">
+                                <span class="search-placeholder">Search result will load here...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section: BMI Calculator (Moved to Sidebar) -->
+                    <div class="sidebar-section">
+                        <div class="section-title">
+                            <span><i class="fa-solid fa-weight-scale text-purple"></i> BMI Calculator</span>
+                        </div>
+                        <div class="bmi-sidebar-pane">
+                            <div class="bmi-calculator-body" style="display: flex; flex-direction: column; gap: 8px;">
+                                <div class="input-row" style="display: flex; gap: 8px;">
+                                    <div class="metric-input" style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+                                        <label for="bmi-weight">W (kg)</label>
+                                        <input type="number" id="bmi-weight" value="70" min="20" max="250">
+                                    </div>
+                                    <div class="metric-input" style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+                                        <label for="bmi-height">H (cm)</label>
+                                        <input type="number" id="bmi-height" value="175" min="100" max="250">
+                                    </div>
+                                </div>
+                                <button class="small-btn primary-btn pulse-hover w-100" onclick="calculateBMI()">Calculate BMI</button>
+                                <div class="bmi-result-wrapper" style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; margin-top: 4px;">
+                                    <span class="label">Result:</span>
+                                    <span id="bmi-val" class="value text-cyan">22.9</span>
+                                    <span id="bmi-status" class="sub-status">(Normal)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section: Emergency Panel -->
+                    <div class="sidebar-section emergency-panel">
+                        <div class="section-title text-red">
+                            <span><i class="fa-solid fa-triangle-exclamation"></i> Emergency Helpline</span>
+                        </div>
+                        <div class="emergency-contact-box">
+                            <div class="emergency-item">
+                                <span class="label">General Emergency</span>
+                                <span class="number neon-red-text">911 / 112</span>
+                            </div>
+                            <div class="emergency-item">
+                                <span class="label">Medical (India)</span>
+                                <span class="number neon-red-text">108</span>
+                            </div>
+                            <div class="emergency-item">
+                                <span class="label">Crisis Lifeline</span>
+                                <span class="number neon-red-text">988</span>
+                            </div>
+                            <div class="emergency-item">
+                                <span class="label">Poison Control</span>
+                                <span class="number neon-red-text">1-800-222-1222</span>
+                            </div>
+                            <p class="emergency-notice">State keywords like <strong>chest pain</strong> or <strong>stroke symptoms</strong> to trigger automated emergency protocol cards.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-footer">
+                    <button class="footer-btn-item" id="sidebar-settings-btn"><i class="fa-solid fa-sliders"></i> Adjust Config</button>
+                </div>
+            </aside>
+
+            <!-- MAIN GRID CONTENT -->
+            <main class="main-content">
+                
+                <!-- CHAT PANEL & EMERGENCY OVERLAYS (RIGHT COLUMN EXTENDED) -->
+                <div class="right-column" style="flex: 1; width: 100%;">
+                    
+                    <!-- CHAT CONSOLE CARD -->
+                    <div class="glass-card chat-card">
+                        <div class="card-glow-border"></div>
+                        
+                        <!-- Chat Box Header -->
+                        <div class="chat-header">
+                            <div class="chat-header-info">
+                                <div class="bot-avatar">
+                                    <i class="fa-solid fa-robot"></i>
+                                    <span class="active-dot"></span>
+                                </div>
+                                <div>
+                                    <h3>CURA Consultation Console</h3>
+                                    <p class="status-text">Active Medical Intel Subsystem</p>
+                                </div>
+                            </div>
+                            
+                            <div class="chat-header-actions">
+                                <button class="chat-action-btn" id="voice-synthesis-toggle" title="Toggle Text-To-Speech">
+                                    <i class="fa-solid fa-volume-high text-cyan"></i>
+                                </button>
+                                <button class="chat-action-btn text-red-glow" id="chat-emergency-btn" title="View Emergency Protocol" onclick="triggerEmergencyUI()">
+                                    <i class="fa-solid fa-circle-exclamation"></i> PROTOCOL
+                            </button>
+                            </div>
+                        </div>
+
+                        <!-- EMERGENCY WARNING BANNER (Shows in Emergency Mode) -->
+                        <div id="emergency-banner" class="emergency-alert-banner" style="display: none;">
+                            <div class="emergency-banner-content">
+                                <div class="emergency-icon"><i class="fa-solid fa-triangle-exclamation pulse-warning"></i></div>
+                                <div class="emergency-text">
+                                    <h4>CRITICAL EMERGENCY PROTOCOL ACTIVATED</h4>
+                                    <p>Keywords suggest high-risk physiological distress. Immediate professional intervention advised.</p>
+                                </div>
+                                <button class="close-banner-btn" onclick="dismissEmergencyUI()">&times;</button>
+                            </div>
+                            <div class="emergency-actions">
+                                <a href="tel:911" class="emergency-call-btn neon-red-border"><i class="fa-solid fa-phone"></i> CALL 911 (US/CA)</a>
+                                <a href="tel:108" class="emergency-call-btn neon-red-border"><i class="fa-solid fa-phone"></i> CALL 108 (IN)</a>
+                                <a href="tel:112" class="emergency-call-btn neon-red-border"><i class="fa-solid fa-phone"></i> CALL 112 (EU)</a>
+                                <button class="emergency-call-btn neon-orange-border" onclick="findNearestHospitals()"><i class="fa-solid fa-hospital"></i> Nearest Hospital</button>
+                            </div>
+                            <div class="first-aid-box">
+                                <strong>Basic Directives while waiting for EMS:</strong>
+                                <ul>
+                                    <li>Sit down and avoid physical exertion.</li>
+                                    <li>Loosen collar buttons and tight breathing wear.</li>
+                                    <li>If chest pain is present, ask if they have aspirin or nitrates.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- CHAT DIALOG WINDOW -->
+                        <div class="chat-messages" id="chat-messages">
+                            
+                            <!-- Initial Bot Greeting -->
+                            <div class="message-wrapper bot-message" data-aos="fade-right">
+                                <div class="message-avatar"><i class="fa-solid fa-robot"></i></div>
+                                <div class="message-content-bubble">
+                                    <div class="chat-text" id="welcome-text-bot"></div>
+                                    <span class="message-timestamp">Just now</span>
+                                </div>
+                            </div>
+                            
+                        </div>
+
+                        <!-- TYPING DOTS INDICATOR -->
+                        <div class="typing-indicator" id="typing-indicator" style="display: none;">
+                            <span class="typing-dot"></span>
+                            <span class="typing-dot"></span>
+                            <span class="typing-dot"></span>
+                            <span class="typing-text">CURA processes medical corpus...</span>
+                        </div>
+
+                        <!-- CHAT INPUT CONTROLS -->
+                        <div class="chat-input-area">
+                            <!-- Floating emoji picker window mockup (can toggle class to show) -->
+                            <div id="emoji-picker-container" class="emoji-picker-popup" style="display: none;">
+                                <div class="emoji-grid">
+                                    <span onclick="insertEmoji('😊')">😊</span>
+                                    <span onclick="insertEmoji('🙏')">🙏</span>
+                                    <span onclick="insertEmoji('🩹')">🩹</span>
+                                    <span onclick="insertEmoji('🌡️')">🌡️</span>
+                                    <span onclick="insertEmoji('💊')">💊</span>
+                                    <span onclick="insertEmoji('🏥')">🏥</span>
+                                    <span onclick="insertEmoji('🥤')">🥤</span>
+                                    <span onclick="insertEmoji('💪')">💪</span>
+                                    <span onclick="insertEmoji('❤️')">❤️</span>
+                                    <span onclick="insertEmoji('👍')">👍</span>
+                                </div>
+                            </div>
+
+                            <!-- Input Action Buttons Left -->
+                            <div class="input-btn-group">
+                                <button class="icon-btn input-action-btn" id="emoji-toggle-btn" title="Add Emoji">
+                                    <i class="fa-regular fa-face-smile"></i>
+                                </button>
+                                <button class="icon-btn input-action-btn" id="file-upload-btn" title="Upload Report">
+                                    <i class="fa-solid fa-paperclip"></i>
+                                    <input type="file" id="file-input" style="display: none;" accept="image/*,application/pdf">
+                                </button>
+                            </div>
+
+                            <!-- Message Input Box -->
+                            <div class="message-input-wrapper">
+                                <textarea id="chat-input-field" placeholder="Describe symptoms or request health recommendations..." rows="1"></textarea>
+                            </div>
+
+                            <!-- Input Action Buttons Right -->
+                            <div class="input-btn-group">
+                                <button class="icon-btn input-action-btn mic-btn" id="voice-input-btn" title="Voice Input">
+                                    <i class="fa-solid fa-microphone"></i>
+                                </button>
+                                <button class="icon-btn send-msg-btn pulse-hover" id="send-msg-btn" title="Send Message">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </main>
+        </div>
+
+        <!-- 3. DIALOG MODALS -->
+        
+        <!-- Voice Configurations Popover -->
+        <div id="voice-settings-modal" class="glass-modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fa-solid fa-sliders"></i> Speech Synthesis Config</h3>
+                    <button class="close-modal-btn" onclick="toggleModal('voice-settings-modal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="config-item">
+                        <label for="voice-select">Voice Profile</label>
+                        <select id="voice-select" class="form-select">
+                            <option value="">Browser default voice</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label for="voice-rate">Speech Velocity: <span id="rate-val-label">1.0x</span></label>
+                        <input type="range" id="voice-rate" min="0.5" max="2.0" step="0.1" value="1.0" class="form-slider">
+                    </div>
+                    <div class="config-item checkbox-item">
+                        <input type="checkbox" id="voice-synthesis-enabled" checked>
+                        <label for="voice-synthesis-enabled">Auto-speak bot answers</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Profile Popover -->
+        <div id="profile-modal" class="glass-modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fa-solid fa-id-card-clip"></i> Patient Identity Profile</h3>
+                    <button class="close-modal-btn" onclick="toggleModal('profile-modal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="config-item">
+                        <label for="profile-name-input">Full Name</label>
+                        <input type="text" id="profile-name-input" class="form-input" value="Guest User">
+                    </div>
+                    <div class="config-item">
+                        <label for="profile-email-input">Email Address</label>
+                        <input type="email" id="profile-email-input" class="form-input" value="guest@curahealth.ai">
+                    </div>
+                    <button class="small-btn primary-btn pulse-hover w-100 mt-1" onclick="saveUserProfile()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clear History Confirmation Modal -->
+        <div id="clear-confirm-modal" class="glass-modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fa-solid fa-triangle-exclamation text-red"></i> Clear History?</h3>
+                    <button class="close-modal-btn" onclick="toggleModal('clear-confirm-modal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p style="font-size: 0.85rem; line-height: 1.4; color: var(--text-primary);">Are you sure you want to permanently delete all consultation log database records and reset the active chat screen? This action cannot be undone.</p>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button class="small-btn danger-hover w-100" id="confirm-clear-action-btn" style="flex: 1;">Yes, Delete All</button>
+                        <button class="small-btn w-100" onclick="toggleModal('clear-confirm-modal')" style="flex: 1;">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER DISCLAIMER -->
+        <footer class="app-footer">
+            <p><strong>Disclaimer:</strong> This AI Healthcare Chatbot provides informational guidance based on algorithms and is NOT a substitute for professional medical advice, diagnosis, or treatment. If you are experiencing serious pain or breathing restrictions, seek emergency medical services (911/112) immediately.</p>
+            <p class="copyright">&copy; 2026 CURA Health Systems. Powered by AVII.</p>
+        </footer>
+
+    </div>
+
+    <!-- JS LIBS DEFER LOADS -->
+    <!-- GSAP Core -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <!-- Lottie Web Player -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+    <!-- Typed.js -->
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+    <!-- AOS (Animate on Scroll) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <!-- Three.js Core -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- OrbitControls -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <!-- Custom Scripts -->
+    <script src="{{ url_for('static', filename='js/threeScene.js') }}?v=6"></script>
+    <script src="{{ url_for('static', filename='js/animation.js') }}?v=6"></script>
+    <script src="{{ url_for('static', filename='js/chat.js') }}?v=6"></script>
+    
+    <script>
+        // Init AOS
+        AOS.init({
+            duration: 800,
+            once: true,
+            easing: 'ease-out'
+        });
+    </script>
+</body>
+</html>
+
